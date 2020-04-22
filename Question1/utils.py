@@ -8,9 +8,10 @@ Created on Mon Apr 20 16:17:26 2020
 
 #Realized that the first line contained P5 followed by the dimensions. Decided to store the dimensions in a List
 import numpy as np
-import matplotlib.pyplot as plt
 
-def read_pgm(path):
+
+#function to convert the pgm file into an image matrix
+def read_pgm(path,img_matrix):
     f = open(path,'rb')
     dim = []
     for i in f.readline().split():
@@ -18,9 +19,24 @@ def read_pgm(path):
             dim.append(int(i))
         except:
             continue
-    print(dim)
     img_matrix = np.ndarray(shape = (dim[1],dim[0]),dtype='int32')
     for x in range(dim[1]):
         for y in range(dim[0]):
             img_matrix[x,y] = (ord(f.read(1)))
-    plt.imshow(img_matrix,cmap='Greys')
+    return img_matrix
+#function to perform svd and use only the high singular valued components
+def matrix_reduction(img_matrix):
+    u, s, vh = np.linalg.svd(img_matrix)
+    total = sum(s)
+    partial_sum = 0
+    i = 0
+    while partial_sum < 0.94*total:
+        partial_sum += s[i]
+        i += 1
+    elbow = i
+    reduced_matrix = np.ndarray(shape = (64,64), dtype = 'float32')
+    for i in range(elbow):
+        for j in range(64):
+            for k in range(64):
+                reduced_matrix[j,k] = reduced_matrix[j,k] + (s[i])*u[j,i]*(vh[i,k])
+    return reduced_matrix
