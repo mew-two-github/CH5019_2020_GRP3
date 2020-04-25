@@ -30,13 +30,15 @@ def matrix_reduction(img_matrix):
     total = sum(s)
     partial_sum = 0
     i = 0
-    while partial_sum < 0.94*total:
+    while partial_sum < 0.75*total:
         partial_sum += s[i]
         i += 1
     elbow = i
     reduced_matrix = np.ndarray(shape = (64,64), dtype = 'float32')
-    for i in range(elbow):
-        for j in range(64):
-            for k in range(64):
-                reduced_matrix[j,k] = reduced_matrix[j,k] + (s[i])*u[j,i]*(vh[i,k])
-    return reduced_matrix
+    reduced_matrix = u[:,:elbow+1] @ np.diag(s[:elbow+1]) @vh[:elbow+1,:] 
+    return elbow, reduced_matrix
+
+def unroll(img):
+    img=img.reshape(img.shape[0]*img.shape[1],1)
+    img=np.transpose(img)
+    return img
