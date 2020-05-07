@@ -9,28 +9,29 @@ import numpy as np
 
 
 class LogisticRegression_inits:
-    #Initializations
-    def __init__(self,init_method='rand', lr=0.01, num_iter=100000, fit_intercept=False,):
+    def __init__(self,init_method='rand', lr=0.01, num_iter=100000, fit_intercept=False,reg_lambda=0.1):
         self.lr = lr
         self.num_iter = num_iter
         self.fit_intercept = fit_intercept
         self.init_method=init_method
+        self.reg_lambda=reg_lambda;
+        self.m=10
         #self.verbose=verbose
-    
     def __add_intercept(self, X):
         intercept = np.ones((X.shape[0], 1))
         return np.concatenate((intercept, X), axis=1)
-    #Defining the sigmoid function
+    
     def __sigmoid(self, z):
         return 1 / (1 + np.exp(-z))
-    
     #Loss: Binary cross entropy
     def __loss(self, h, y):
-        return (-y * np.log(h) - (1 - y) * np.log(1 - h)).mean()
+        non_reg = (-y * np.log(h) - (1 - y) * np.log(1 - h)).mean()
+        t=np.square(self.theta)
+        reg=(self.reg_lambda/(2*self.m))*np.sum(t)
+        return non_reg+reg
     
-    #Gradient Descent Implementation
     def fit(self, X, y):
-        m = y.size
+        
         if self.fit_intercept:
             X = self.__add_intercept(X)
         # weights initialization
@@ -42,27 +43,29 @@ class LogisticRegression_inits:
             self.theta = np.random.normal(0,1,size=X.shape[1])
         
         
-        #Gradient_Descent
+        
         for i in range(self.num_iter):
             z = np.dot(X, self.theta)
             h = self.__sigmoid(z)
-            if i%50==0:
-                print("Iteration: {} \t Logloss: {:.5f}".format(i+1, np.mean(self.__loss(h,y))))
-            gradient = np.dot(X.T, (h - y))
-            self.theta -= self.lr * gradient/m
             
-    #Function to print weights
+            if (i+1)%(self.num_iter/10)==0:
+                print("Iteration: {} \t Logloss: {:.5f}".format(i+1, np.mean(self.__loss(h,y))))
+            gradient = np.dot(X.T, (h - y)) + 2*self.reg_lambda*self.theta
+            self.theta -= self.lr * gradient/self.m
+            for j in range(self.theta.size):
+                if(j==0):
+                    break
+                self.theta[j]-=(self.theta[j]*self.reg_lambda*self.lr)/self.m
+            
+            
     def weights(self):
-        print(self.theta.values())
-    
-    #Predicting the probability for a given data between 0-1
+        return(self.theta)
     def predict_prob(self, X):
         if self.fit_intercept:
             X = self.__add_intercept(X)
     
         return self.__sigmoid(np.dot(X, self.theta))
     
-    #Predicts Pass/Fail based on the set threshold value and the calculated probability
     def predict(self, X, threshold=0.5):
         pred=self.predict_prob(X) #>= threshold
         for i in range(pred.shape[0]):
