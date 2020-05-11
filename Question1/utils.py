@@ -30,7 +30,7 @@ def matrix_reduction(img_matrix):
     total = sum(s)
     partial_sum = 0
     i = 0
-    while partial_sum < 0.75*total:
+    while partial_sum < 0.7*total:
         partial_sum += s[i]
         i += 1
     elbow = i
