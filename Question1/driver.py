@@ -47,7 +47,7 @@ for i in range(15):
         minimum = np.linalg.norm(matrix-rep_images[0],1)
         #minimum = 10**9
         for img_id in range(15):
-            image_distance = np.linalg.norm(matrix-rep_images[img_id],1)
+            image_distance = np.sqrt(np.linalg.norm(matrix-rep_images[img_id],2))
             if minimum > image_distance:
                 match = img_id + 1
                 minimum = image_distance
