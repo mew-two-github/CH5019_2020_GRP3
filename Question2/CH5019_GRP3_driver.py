@@ -8,7 +8,7 @@ Created on Sat May  2 14:42:46 2020
 import pandas as pd
 import numpy as np
 
-import utils
+import CH5019_GRP3_utils as utils
 
 data=pd.read_excel('Dataset_Question2.xlsx')
 row, cols = data.shape

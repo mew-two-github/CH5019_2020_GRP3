@@ -6,7 +6,7 @@ Created on Wed Apr 22 16:20:23 2020
 """
 import numpy as np
 import matplotlib.pyplot as plt
-import utils
+import CH5019_GRP3_utils as utils
 
 
 rep_images = np.zeros(shape=(15,64,64),dtype='float32')
